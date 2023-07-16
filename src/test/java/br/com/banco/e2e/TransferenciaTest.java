@@ -78,7 +78,7 @@ class TransferenciaTest {
 	}
 	
 	@Test
-	@Order(3)
+	@Order(4)
 	public void testGetAllTransactionByAccoutIdOperatorNameAndDateRange() throws Exception {
 	    this.mockMvc.perform(get(this.baseUrl.concat("&initialDate=2018-01-01&finalDate=2023-07-15&operatorName=Beltrano")).contentType(MediaType.APPLICATION_JSON))
 	        .andExpect(status().is(HttpStatus.OK.value()))
