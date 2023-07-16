@@ -76,4 +76,15 @@ class TransferenciaTest {
 	        .andExpect(jsonPath("$[1].transferDate").value("2019-05-04T02:12:45-03:00"))
 	        .andExpect(jsonPath("$[2].transferDate").value("2020-06-08T04:15:01-03:00"));
 	}
+	
+	@Test
+	@Order(3)
+	public void testGetAllTransactionByAccoutIdOperatorNameAndDateRange() throws Exception {
+	    this.mockMvc.perform(get(this.baseUrl.concat("&initialDate=2018-01-01&finalDate=2023-07-15&operatorName=Beltrano")).contentType(MediaType.APPLICATION_JSON))
+	        .andExpect(status().is(HttpStatus.OK.value()))
+	        .andExpect(jsonPath("$.length()").value(1))
+	        .andExpect(jsonPath("$[0].conta.name").value("Fulano"))
+	        .andExpect(jsonPath("$[0].conta.id").value(1))
+	        .andExpect(jsonPath("$[0].transferDate").value("2020-06-08T04:15:01-03:00"));
+	}
 }
