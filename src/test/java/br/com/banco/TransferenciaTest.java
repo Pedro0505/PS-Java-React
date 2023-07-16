@@ -49,6 +49,6 @@ class TransferenciaTest {
 		.andExpect(jsonPath("$[0].conta.name").value("Fulano"))
 		.andExpect(jsonPath("$[0].conta.id").value(1))
 		.andExpect(jsonPath("$[1].conta.id").value(1))
-		.andExpect(jsonPath("$[2].conta.id").value(1));
+		.andExpect(jsonPath("$[2].conta.id").value(2));
 	}
 }
