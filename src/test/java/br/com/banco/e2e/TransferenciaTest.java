@@ -1,4 +1,4 @@
-package br.com.banco;
+package br.com.banco.e2e;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -60,5 +60,20 @@ class TransferenciaTest {
 		.andExpect(jsonPath("$[0].conta.name").value("Fulano"))
 		.andExpect(jsonPath("$[0].conta.id").value(1))
 		.andExpect(jsonPath("$[0].transactionOperatorName").value("Beltrano"));
+	}
+	
+	@Test
+	@Order(3)
+	public void testGetAllTransactionByAccoutIdAndDateRange() throws Exception {
+	    this.mockMvc.perform(get(this.baseUrl.concat("&initialDate=2018-01-01&finalDate=2023-07-15")).contentType(MediaType.APPLICATION_JSON))
+	        .andExpect(status().is(HttpStatus.OK.value()))
+	        .andExpect(jsonPath("$.length()").value(3))
+	        .andExpect(jsonPath("$[0].conta.name").value("Fulano"))
+	        .andExpect(jsonPath("$[0].conta.id").value(1))
+	        .andExpect(jsonPath("$[1].conta.id").value(1))
+	        .andExpect(jsonPath("$[2].conta.id").value(1))
+	        .andExpect(jsonPath("$[0].transferDate").value("2019-01-01T07:00:00-02:00"))
+	        .andExpect(jsonPath("$[1].transferDate").value("2019-05-04T02:12:45-03:00"))
+	        .andExpect(jsonPath("$[2].transferDate").value("2020-06-08T04:15:01-03:00"));
 	}
 }
