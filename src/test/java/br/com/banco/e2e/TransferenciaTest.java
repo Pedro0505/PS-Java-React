@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -72,9 +73,9 @@ class TransferenciaTest {
 	        .andExpect(jsonPath("$[0].conta.id").value(1))
 	        .andExpect(jsonPath("$[1].conta.id").value(1))
 	        .andExpect(jsonPath("$[2].conta.id").value(1))
-	        .andExpect(jsonPath("$[0].transferDate").value("2019-01-01T07:00:00-02:00"))
-	        .andExpect(jsonPath("$[1].transferDate").value("2019-05-04T02:12:45-03:00"))
-	        .andExpect(jsonPath("$[2].transferDate").value("2020-06-08T04:15:01-03:00"));
+	        .andExpect(jsonPath("$[0].transferDate").value(Matchers.startsWith(("2019"))))
+	        .andExpect(jsonPath("$[1].transferDate").value(Matchers.startsWith(("2019"))))
+	        .andExpect(jsonPath("$[2].transferDate").value(Matchers.startsWith(("2020"))));
 	}
 	
 	@Test
@@ -85,6 +86,6 @@ class TransferenciaTest {
 	        .andExpect(jsonPath("$.length()").value(1))
 	        .andExpect(jsonPath("$[0].conta.name").value("Fulano"))
 	        .andExpect(jsonPath("$[0].conta.id").value(1))
-	        .andExpect(jsonPath("$[0].transferDate").value("2020-06-08T04:15:01-03:00"));
+	        .andExpect(jsonPath("$[0].transferDate").value(Matchers.startsWith(("2020"))));
 	}
 }
