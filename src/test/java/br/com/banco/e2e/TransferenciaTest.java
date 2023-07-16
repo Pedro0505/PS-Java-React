@@ -58,6 +58,7 @@ class TransferenciaTest {
 	public void testGetAllTransactionByAccoutIdAndOperatorName() throws Exception {
 		this.mockMvc.perform(get(this.baseUrl.concat("&operatorName=Beltrano")).contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().is(HttpStatus.OK.value()))
+		.andExpect(jsonPath("$.length()").value(1))
 		.andExpect(jsonPath("$[0].conta.name").value("Fulano"))
 		.andExpect(jsonPath("$[0].conta.id").value(1))
 		.andExpect(jsonPath("$[0].transactionOperatorName").value("Beltrano"));
