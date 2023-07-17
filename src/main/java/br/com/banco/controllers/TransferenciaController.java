@@ -26,7 +26,7 @@ public class TransferenciaController {
 			@RequestParam(value = "initialDate") Optional<String> initialDate,
 			@RequestParam(value = "finalDate") Optional<String> finalDate,
 			@RequestParam(value = "operatorName") Optional<String> operatorName,
-			@RequestParam(value = "accountId") String accountId) {
+			@RequestParam(value = "accountId") Optional<String> accountId) {
 
 		List<Transferencia> transactions = this.service.getAllFiltered(operatorName, initialDate, finalDate, accountId);
 
