@@ -79,11 +79,15 @@ public class TransferenciaService {
 	}
 	
 	private TransferenciaSearchDto transferenciaSerialize(Optional<String> operatorName, Optional<String> initialDate, Optional<String> finalDate, Optional<String> accountId) {
-		OffsetDateTime startDateTime = initialDate.map(SerializeDates::stringToOffSetDateTime).orElse(null);
-		OffsetDateTime endDateTime = finalDate.map(SerializeDates::stringToOffSetDateTime).orElse(null);
-		String operator = operatorName.orElse(null);
-		Long id = accountId.map(Long::parseLong).orElse(null);
+	    try {
+	        OffsetDateTime startDateTime = initialDate.map(SerializeDates::stringToOffSetDateTime).orElse(null);
+	        OffsetDateTime endDateTime = finalDate.map(SerializeDates::stringToOffSetDateTime).orElse(null);
+	        String operator = operatorName.orElse(null);
+	        Long id = accountId.map(Long::parseLong).orElse(null);
 
-		return new TransferenciaSearchDto(id, startDateTime, endDateTime, operator);
+	        return new TransferenciaSearchDto(id, startDateTime, endDateTime, operator);
+	    } catch (NumberFormatException e) {
+	        throw new BadRequestException("O ID da conta deve ser um número válido.");
+	    }
 	}
 }
