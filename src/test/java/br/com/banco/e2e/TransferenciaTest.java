@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +31,8 @@ class TransferenciaTest {
 	private int port;
 
 	private String baseUrl = "http://localhost";
+	
+	private String baseUrlInvalidId;
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -39,10 +40,10 @@ class TransferenciaTest {
 	@BeforeEach
 	public void setUp() {
 		baseUrl = baseUrl.concat(":").concat(port + "").concat("/transferencias").concat("?accountId=1");
+		baseUrlInvalidId = baseUrl.concat(":").concat(port + "").concat("/transferencias").concat("?accountId=q");
 	}
 
 	@Test
-	@Order(1)
 	public void testGetAllTransactionByAccoutId() throws Exception {
 		this.mockMvc.perform(get(this.baseUrl).contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().is(HttpStatus.OK.value()))
@@ -54,7 +55,6 @@ class TransferenciaTest {
 	}
 	
 	@Test
-	@Order(2)
 	public void testGetAllTransactionByAccoutIdAndOperatorName() throws Exception {
 		this.mockMvc.perform(get(this.baseUrl.concat("&operatorName=Beltrano")).contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().is(HttpStatus.OK.value()))
@@ -65,7 +65,6 @@ class TransferenciaTest {
 	}
 	
 	@Test
-	@Order(3)
 	public void testGetAllTransactionByAccoutIdAndDateRange() throws Exception {
 	    this.mockMvc.perform(get(this.baseUrl.concat("&initialDate=2018-01-01&finalDate=2023-07-15")).contentType(MediaType.APPLICATION_JSON))
 	        .andExpect(status().is(HttpStatus.OK.value()))
@@ -80,7 +79,6 @@ class TransferenciaTest {
 	}
 	
 	@Test
-	@Order(4)
 	public void testGetAllTransactionByAccoutIdOperatorNameAndDateRange() throws Exception {
 	    this.mockMvc.perform(get(this.baseUrl.concat("&initialDate=2018-01-01&finalDate=2023-07-15&operatorName=Beltrano")).contentType(MediaType.APPLICATION_JSON))
 	        .andExpect(status().is(HttpStatus.OK.value()))
@@ -91,7 +89,6 @@ class TransferenciaTest {
 	}
 	
 	@Test
-	@Order(5)
 	public void testGetAllTransactionByAccoutIdOperatorNameAndDateRange_whenPassFinalDateAfterInitial() throws Exception {
 	    this.mockMvc.perform(get(this.baseUrl.concat("&initialDate=2023-07-15&finalDate=2018-01-01&operatorName=Beltrano")).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
@@ -100,7 +97,6 @@ class TransferenciaTest {
 	}
 	
 	@Test
-	@Order(6)
 	public void testGetAllTransactionByAccoutIdAndDateRange_whenPassFinalDateAfterInitial() throws Exception {
 	    this.mockMvc.perform(get(this.baseUrl.concat("&initialDate=2023-07-15&finalDate=2018-01-01")).contentType(MediaType.APPLICATION_JSON))
 	        .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
@@ -109,7 +105,6 @@ class TransferenciaTest {
 	}
 	
 	@Test
-	@Order(7)
 	public void testGetAllTransactionByAccoutIdAndDateRange_whenDontSendInitialDate() throws Exception {
 	    this.mockMvc.perform(get(this.baseUrl.concat("&finalDate=2018-01-01&operatorName=Beltrano")).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
@@ -118,7 +113,6 @@ class TransferenciaTest {
 	}
 	
 	@Test
-	@Order(8)
 	public void testGetAllTransactionByAccoutIdAndDateRange_whenDontSendFinalDate() throws Exception {
 	    this.mockMvc.perform(get(this.baseUrl.concat("&initialDate=2023-07-15")).contentType(MediaType.APPLICATION_JSON))
 	        .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
@@ -127,7 +121,6 @@ class TransferenciaTest {
 	}
 	
 	@Test
-	@Order(9)
 	public void testGetAllTransactionByAccoutIdOperatorNameAndDateRange_whenDontSendInitialDate() throws Exception {
 	    this.mockMvc.perform(get(this.baseUrl.concat("&finalDate=2018-01-01&operatorName=Beltrano")).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
@@ -136,11 +129,42 @@ class TransferenciaTest {
 	}
 	
 	@Test
-	@Order(10)
 	public void testGetAllTransactionByAccoutIdOperatorNameAndDateRange_whenDontSendFinalDate() throws Exception {
 	    this.mockMvc.perform(get(this.baseUrl.concat("&initialDate=2023-07-15&operatorName=Beltrano")).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
         .andExpect(jsonPath("$.message").value("Se uma data for informada, a outra também precisa ser preenchida."))
         .andExpect(jsonPath("$.error").value("Error in your request"));
+	}
+	
+	@Test
+	public void testGetAllTransactionByAccoutId_whenSendInvalidId() throws Exception {
+		this.mockMvc.perform(get(this.baseUrlInvalidId).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+        .andExpect(jsonPath("$.message").value("O ID da conta deve ser um número válido."))
+        .andExpect(jsonPath("$.error").value("Error in your request"));
+	}
+	
+	@Test
+	public void testGetAllTransactionByAccoutIdAndOperatorName_whenSendInvalidId() throws Exception {
+		this.mockMvc.perform(get(this.baseUrlInvalidId.concat("&operatorName=Beltrano")).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+        .andExpect(jsonPath("$.message").value("O ID da conta deve ser um número válido."))
+        .andExpect(jsonPath("$.error").value("Error in your request"));
+	}
+	
+	@Test
+	public void testGetAllTransactionByAccoutIdOperatorNameAndDateRange_whenSendInvalidId() throws Exception {
+	    this.mockMvc.perform(get(this.baseUrlInvalidId.concat("&initialDate=2023-07-15&operatorName=Beltrano")).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+        .andExpect(jsonPath("$.message").value("O ID da conta deve ser um número válido."))
+        .andExpect(jsonPath("$.error").value("Error in your request"));
+	}
+	
+	@Test
+	public void testGetAllTransactionByAccoutIdAndDateRange_whenSendInvalidId() throws Exception {
+	    this.mockMvc.perform(get(this.baseUrlInvalidId.concat("&initialDate=2023-07-15")).contentType(MediaType.APPLICATION_JSON))
+	        .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+	        .andExpect(jsonPath("$.message").value("O ID da conta deve ser um número válido."))
+	        .andExpect(jsonPath("$.error").value("Error in your request"));
 	}
 }
